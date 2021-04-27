@@ -8,6 +8,8 @@ namespace CleanArchitecture.Application.DatabaseServices
     public interface IProductTypeService
     {
         Task<bool> CreateProductType(ProductType request);
+        Task<bool> UpdateProductType(ProductType request);
+
         Task<bool> DeleteProductType(Guid productTypeId);
         Task<IEnumerable<ProductType>> FetchProductType();
     }

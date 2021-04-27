@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using System.Linq;
 using SqlKata.Execution;
 using SqlKata.Compilers;
+using CleanArchitecture.Domain.Enums;
 
 namespace CleanArchitecture.Infrastructure.DatabaseServices
 {
@@ -50,18 +51,32 @@ namespace CleanArchitecture.Infrastructure.DatabaseServices
             return affectedRecords > 0;
         }
 
+
+        public async Task<bool> UpdateProductType(ProductType request)
+        {
+            using var conn = await _database.CreateConnectionAsync();
+            var db = new QueryFactory(conn, new SqlServerCompiler());
+
+            var affectedRecords = await db.Query("ProductType").Where("ProductTypeID",request.ProductTypeID).UpdateAsync(new
+            {
+                ProductTypeKey = request.ProductTypeKey,
+                ProductTypeName = request.ProductTypeName,
+                RecordStatus = request.RecordStatus,
+                UpdatedDate = DateTime.UtcNow,
+                UpdatedUser = Guid.NewGuid()
+            });
+           
+            return affectedRecords > 0;
+        }
+
         public async Task<bool> DeleteProductType(Guid productTypeId)
         {
             using var conn = await _database.CreateConnectionAsync();
-            //var db = new QueryFactory(conn, new SqlServerCompiler());
-            //var affectedRecord = await db.Query("ProductType").Where("ProductTypeID", "=", productTypeId).DeleteAsync();
-
-            var parameters = new
+            var db = new QueryFactory(conn, new SqlServerCompiler());
+            var affectedRecords = await db.Query("ProductType").Where("ProductTypeID", productTypeId).UpdateAsync(new
             {
-                ProductTypeID = productTypeId
-            };
-            var affectedRecords = await conn.ExecuteAsync("DELETE FROM ProductType where ProductTypeID = @ProductTypeID",
-                parameters);
+                RecordStatus = RecordStatus.InActive,
+            });
             return affectedRecords > 0;
         }
 

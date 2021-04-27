@@ -9,19 +9,19 @@ namespace CleanArchitecture.WebAPI.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class ProductTypeController : ControllerBase
+    public class Productontroller : ControllerBase
     {
-        private readonly IProductTypeService _productTypeService;
-        public ProductTypeController(IProductTypeService productTypeService )
+        private readonly IProductService _productService;
+        public Productontroller(IProductService productService )
         {
-            _productTypeService = productTypeService;
+            _productService = productService;
         }
 
         // We can update search criteria later
         [HttpGet]
-        public async Task<IEnumerable<ProductType>> Get()
+        public async Task<IEnumerable<Product>> Get()
         {
-            var result = await _productTypeService.FetchProductType();
+            var result = await _productService.FetchProduct();
             return result;
         }
 
@@ -35,18 +35,18 @@ namespace CleanArchitecture.WebAPI.Controllers
 
         // POST
         [HttpPost]
-        public async Task<ActionResult<bool>> Post(ProductType model)
+        public async Task<ActionResult<bool>> Post(Product model)
         {
-            var result = await _productTypeService.CreateProductType(model);
+            var result = await _productService.CreateProduct(model);
             return result;
         }
 
         // PUT 
         [HttpPut("{id}")]
-        public async Task<ActionResult<bool>> Put(Guid id, [FromBody] ProductType request)
+        public async Task<ActionResult<bool>> Put(Guid id, [FromBody] Product request)
         {
-            request.ProductTypeID = id;
-            var result = await _productTypeService.UpdateProductType(request);
+            request.ProductID = id;
+            var result = await _productService.UpdateProduct(request);
             return result;
         }
 
@@ -54,7 +54,7 @@ namespace CleanArchitecture.WebAPI.Controllers
         [HttpDelete("{id}")]
         public async Task<ActionResult<bool>> Delete(Guid id)
         {
-            var result = await _productTypeService.DeleteProductType(id);
+            var result = await _productService.DeleteProduct(id);
             return result;
         }
     }
