@@ -37,7 +37,7 @@ namespace InstantPOS.WebAPI.Controllers
 
         // POST
         [HttpPost]
-        public async Task<ActionResult<bool>> Post(CreateProductTypeCommand command)
+        public async Task<ActionResult<bool>> Post([FromBody] CreateProductTypeCommand command)
         {
             return await Mediator.Send(command);
         }

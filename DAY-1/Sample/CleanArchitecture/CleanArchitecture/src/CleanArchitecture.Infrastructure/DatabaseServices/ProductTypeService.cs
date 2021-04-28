@@ -8,6 +8,8 @@ using System.Linq;
 using SqlKata.Execution;
 using SqlKata.Compilers;
 using CleanArchitecture.Domain.Enums;
+using CleanArchitecture.Application.CQRS.ProductType.Command;
+using CleanArchitecture.Application.Models.ProductType.Response;
 
 namespace CleanArchitecture.Infrastructure.DatabaseServices
 {
@@ -20,7 +22,7 @@ namespace CleanArchitecture.Infrastructure.DatabaseServices
             _database = database;
         }
 
-        public async Task<bool> CreateProductType(ProductType request)
+        public async Task<bool> CreateProductType(CreateProductTypeCommand request)
         {
             using var conn = await _database.CreateConnectionAsync();
             var db = new QueryFactory(conn, new SqlServerCompiler());
@@ -52,12 +54,12 @@ namespace CleanArchitecture.Infrastructure.DatabaseServices
         }
 
 
-        public async Task<bool> UpdateProductType(ProductType request)
+        public async Task<bool> UpdateProductType(UpdateProductTypeCommand request)
         {
             using var conn = await _database.CreateConnectionAsync();
             var db = new QueryFactory(conn, new SqlServerCompiler());
 
-            var affectedRecords = await db.Query("ProductType").Where("ProductTypeID",request.ProductTypeID).UpdateAsync(new
+            var affectedRecords = await db.Query("ProductType").Where("ProductTypeID", request.ProductTypeID).UpdateAsync(new
             {
                 ProductTypeKey = request.ProductTypeKey,
                 ProductTypeName = request.ProductTypeName,
@@ -65,41 +67,49 @@ namespace CleanArchitecture.Infrastructure.DatabaseServices
                 UpdatedDate = DateTime.UtcNow,
                 UpdatedUser = Guid.NewGuid()
             });
-           
+
             return affectedRecords > 0;
         }
 
-        public async Task<bool> DeleteProductType(Guid productTypeId)
+        public async Task<bool> DeleteProductType(DeleteProductTypeCommand request)
         {
             using var conn = await _database.CreateConnectionAsync();
             var db = new QueryFactory(conn, new SqlServerCompiler());
-            var affectedRecords = await db.Query("ProductType").Where("ProductTypeID", productTypeId).UpdateAsync(new
+            var affectedRecords = await db.Query("ProductType").Where("ProductTypeID", request.ProductTypeID).UpdateAsync(new
             {
                 RecordStatus = RecordStatus.InActive,
             });
             return affectedRecords > 0;
         }
 
-        public async Task<IEnumerable<ProductType>> FetchProductType()
+        public async Task<IEnumerable<ProductTypeResponseModel>> FetchProductType()
         {
             using var conn = await _database.CreateConnectionAsync();
             //var db = new QueryFactory(conn, new SqlServerCompiler());
             //var result = db.Query("ProductType");
             //return await result.GetAsync<ProductTypeResponseModel>();
 
-            var result = conn.Query<ProductType>("Select * from ProductType").ToList();
+            var result = conn.Query<ProductTypeResponseModel>("Select * from ProductType").ToList();
             return result;
         }
 
         private async Task<bool> IsProductTypeKeyUnique(QueryFactory db, string productTypeKey, Guid productTypeID)
         {
             var result = await db.Query("ProductType").Where("ProductTypeKey", "=", productTypeKey)
-                .FirstOrDefaultAsync<ProductType>();
+                .FirstOrDefaultAsync<ProductTypeResponseModel>();
 
             if (result == null)
                 return true;
 
             return result.ProductTypeID == productTypeID;
+        }
+
+        public async Task<ProductTypeDetailsResponseModel> GetProductTypeDetails(Guid productTypeId)
+        {
+            using var conn = await _database.CreateConnectionAsync();
+            var db = new QueryFactory(conn, new SqlServerCompiler());
+            return await db.Query("ProductType").Where("ProductTypeID", "=", productTypeId)
+                .FirstOrDefaultAsync<ProductTypeDetailsResponseModel>();
         }
     }
 }

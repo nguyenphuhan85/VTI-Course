@@ -8,6 +8,8 @@ using System.Linq;
 using SqlKata.Execution;
 using SqlKata.Compilers;
 using CleanArchitecture.Domain.Enums;
+using CleanArchitecture.Application.CQRS.Product.Command;
+using CleanArchitecture.Application.Models.Product.Response;
 
 namespace CleanArchitecture.Infrastructure.DatabaseServices
 {
@@ -20,7 +22,7 @@ namespace CleanArchitecture.Infrastructure.DatabaseServices
             _database = database;
         }
 
-        public async Task<bool> CreateProduct(Product request)
+        public async Task<bool> CreateProduct(CreateProductCommand request)
         {
             using var conn = await _database.CreateConnectionAsync();
             var db = new QueryFactory(conn, new SqlServerCompiler());
@@ -34,7 +36,7 @@ namespace CleanArchitecture.Infrastructure.DatabaseServices
                 ProductKey = request.ProductKey,
                 ProductName = request.ProductName,
                 ProductImageUri = request.ProductImageUri,
-                ProductTypeID=request.ProductType,
+                ProductTypeID=request.ProductTypeID,
                 RecordStatus = request.RecordStatus,
                 CreatedDate = DateTime.UtcNow,
                 UpdatedUser = Guid.NewGuid()
@@ -44,7 +46,7 @@ namespace CleanArchitecture.Infrastructure.DatabaseServices
         }
 
 
-        public async Task<bool> UpdateProduct(Product request)
+        public async Task<bool> UpdateProduct(UpdateProductCommand request)
         {
             using var conn = await _database.CreateConnectionAsync();
             var db = new QueryFactory(conn, new SqlServerCompiler());
@@ -54,7 +56,7 @@ namespace CleanArchitecture.Infrastructure.DatabaseServices
                 ProductKey = request.ProductKey,
                 ProductName = request.ProductName,
                 ProductImageUri = request.ProductImageUri,
-                ProductTypeID = request.ProductType,
+                ProductTypeID = request.ProductTypeID,
                 RecordStatus = request.RecordStatus,
                 UpdatedDate = DateTime.UtcNow,
                 UpdatedUser = Guid.NewGuid()
@@ -63,33 +65,41 @@ namespace CleanArchitecture.Infrastructure.DatabaseServices
             return affectedRecords > 0;
         }
 
-        public async Task<bool> DeleteProduct(Guid productId)
+        public async Task<bool> DeleteProduct(DeleteProductCommand request)
         {
             using var conn = await _database.CreateConnectionAsync();
             var db = new QueryFactory(conn, new SqlServerCompiler());
-            var affectedRecords = await db.Query("Product").Where("ProductID", productId).UpdateAsync(new
+            var affectedRecords = await db.Query("Product").Where("ProductID", request.ProductID).UpdateAsync(new
             {
                 RecordStatus = RecordStatus.InActive,
             });
             return affectedRecords > 0;
         }
 
-        public async Task<IEnumerable<Product>> FetchProduct()
+        public async Task<IEnumerable<ProductResponseModel>> FetchProduct()
         {
             using var conn = await _database.CreateConnectionAsync();
-            var result = conn.Query<Product>("Select * from Product").ToList();
+            var result = conn.Query<ProductResponseModel>("Select * from Product").ToList();
             return result;
         }
 
         private async Task<bool> IsProductKeyUnique(QueryFactory db, string productKey, Guid productID)
         {
             var result = await db.Query("Product").Where("ProductKey", "=", productKey)
-                .FirstOrDefaultAsync<ProductType>();
+                .FirstOrDefaultAsync<ProductResponseModel>();
 
             if (result == null)
                 return true;
 
-            return result.ProductTypeID == productID;
+            return result.ProductID == productID;
+        }
+
+        public async Task<ProductResponseModel> GetProduct(Guid productId)
+        {
+            using var conn = await _database.CreateConnectionAsync();
+            var db = new QueryFactory(conn, new SqlServerCompiler());
+            var result = db.Query("Product").Where("ProductID", productId).FirstOrDefault();
+            return result;
         }
     }
 }

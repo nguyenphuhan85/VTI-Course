@@ -4,7 +4,9 @@ using System.Linq;
 using System.Threading.Tasks;
 using InstantPOS.Application.CQRS.Product.Command;
 using InstantPOS.Application.CQRS.Product.Query;
+using InstantPOS.Application.CQRS.ProductType.Query;
 using InstantPOS.Application.Models.Product;
+using InstantPOS.Application.Models.ProductType;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
@@ -37,7 +39,7 @@ namespace InstantPOS.WebAPI.Controllers
 
         // POST api/values
         [HttpPost]
-        public async Task<ActionResult<bool>> Post(CreateProductCommand command)
+        public async Task<ActionResult<bool>> Post([FromBody] CreateProductCommand command)
         {
             return await Mediator.Send(command);
         }
