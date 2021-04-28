@@ -6,17 +6,21 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Models\ProductType\Request\**" />
+    <Compile Remove="Models\Product\Request\**" />
+    <EmbeddedResource Remove="Models\ProductType\Request\**" />
+    <EmbeddedResource Remove="Models\Product\Request\**" />
+    <None Remove="Models\ProductType\Request\**" />
+    <None Remove="Models\Product\Request\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Compile Remove="Models\Product.cs" />
     <Compile Remove="Models\ProductType.cs" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\CleanArchitecture.Domain\CleanArchitecture.Domain.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Models\ProductType\Request\" />
-    <Folder Include="Models\Product\Request\" />
   </ItemGroup>
 
   <ItemGroup>
