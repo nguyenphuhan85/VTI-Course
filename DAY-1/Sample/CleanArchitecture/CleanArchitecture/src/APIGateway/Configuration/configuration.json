@@ -86,7 +86,7 @@
     },
     //product type api config
     {
-      "DownstreamPathTemplate": "/api/productype/{everything}",
+      "DownstreamPathTemplate": "/api/producttype/{everything}",
       "DownstreamScheme": "https",
       "DownstreamHostAndPorts": [
         {
@@ -94,7 +94,7 @@
           "Port": 7001
         }
       ],
-      "UpstreamPathTemplate": "/api/productype/{everything}",
+      "UpstreamPathTemplate": "/api/producttype/{everything}",
       "UpstreamHttpMethod": [
         "GET",
         "POST",
@@ -115,7 +115,7 @@
       }
     },
     {
-      "DownstreamPathTemplate": "/api/productype/aggregate-payment",
+      "DownstreamPathTemplate": "/api/producttype/aggregate-payment",
       "DownstreamScheme": "https",
       "DownstreamHostAndPorts": [
         {
@@ -123,7 +123,7 @@
           "Port": 7001
         }
       ],
-      "UpstreamPathTemplate": "/api/productype/aggregate-payment",
+      "UpstreamPathTemplate": "/api/producttype/aggregate-payment",
       "UpstreamHttpMethod": [
         "GET"
       ],
@@ -150,14 +150,14 @@
     {
       "RouteKeys": [
         "aggregate-product",
-        "aggregate-productype"
+        "aggregate-producttype"
       ],
       //"AuthenticationOptions": {
       //  "AuthenticationProviderKey": "TestKey",
       //  "AllowedScopes": []
       //},
       //"Aggregator": "FakeDefinedAggregator",
-      "UpstreamPathTemplate": "/api/productype-aggregator"
+      "UpstreamPathTemplate": "/api/producttype-aggregator"
     }
   ]
 }

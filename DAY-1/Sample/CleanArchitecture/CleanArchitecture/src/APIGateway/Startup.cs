@@ -1,18 +1,14 @@
 using IdentityServer4.AccessTokenValidation;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.HttpsPolicy;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
-using Microsoft.OpenApi.Models;
 using Ocelot.DependencyInjection;
+using Ocelot.Cache.CacheManager;
+using Ocelot.Middleware;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+using Microsoft.OpenApi.Models;
 
 namespace APIGateway
 {
@@ -44,14 +40,22 @@ namespace APIGateway
                 o.RequireHttpsMetadata = false;
             };
 
-            services.AddAuthentication(IdentityServerAuthenticationDefaults.AuthenticationScheme)
-                .AddIdentityServerAuthentication(authenticationProviderKey, opt);
+            //services.AddAuthentication(IdentityServerAuthenticationDefaults.AuthenticationScheme)
+            //    .AddIdentityServerAuthentication(authenticationProviderKey, opt);
+
+            services.AddAuthentication(options =>
+            {
+                options.DefaultScheme = IdentityServerAuthenticationDefaults.AuthenticationScheme;
+                options.DefaultAuthenticateScheme = IdentityServerAuthenticationDefaults.AuthenticationScheme;
+                options.DefaultChallengeScheme = IdentityServerAuthenticationDefaults.AuthenticationScheme;
+            }).AddIdentityServerAuthentication(authenticationProviderKey, opt);
+          
             services.AddOcelot()
-                  .AddTransientDefinedAggregator<FakeDefinedAggregator>();
-                //.AddCacheManager(x =>
-                //{
-                //    x.WithDictionaryHandle();
-                //});
+                 .AddTransientDefinedAggregator<FakeDefinedAggregator>()
+               .AddCacheManager(x =>
+               {
+                   x.WithDictionaryHandle();
+               });
 
         }
 
@@ -75,6 +79,8 @@ namespace APIGateway
             {
                 endpoints.MapControllers();
             });
+            app.UseOcelot();
+
         }
     }
 }
