@@ -1,0 +1,64 @@
+syntax = "proto3";
+import "google/protobuf/timestamp.proto";
+
+option csharp_namespace = "GrpcServiceSample";
+
+
+package payment;
+
+service Payment{
+	rpc MakePayment (MakePaymentRequestModel) returns (MakePaymentReply) {}
+	rpc GetPayment (GetPaymentRequestModel) returns (GetPaymentReply) {}
+	rpc GetPaymentStatus (GetPaymentStatusRequestModel) returns (stream GetPaymentStatusReply) {}
+	rpc CashOut (stream CashOutRequestModel) returns (CashoutResponseModel) {}
+	rpc CustomerCommunication (stream SendingMessage) returns (stream ReplyingMessage) {}
+}
+
+message MakePaymentRequestModel{
+	string orderId = 1;
+	string productId = 2;
+	int32 quantity = 3;
+	string address = 4;
+	google.protobuf.Timestamp orderdate = 5;
+}
+
+message MakePaymentReply{
+	string confirmationMessage = 1;
+}
+
+message GetPaymentRequestModel{
+	string orderId = 1;
+}
+
+message GetPaymentReply{
+	string productId = 1;
+	int32 quantity = 2;
+	string address = 3;
+	google.protobuf.Timestamp orderdate = 4;
+}
+
+message GetPaymentStatusRequestModel{
+	string orderId = 1;
+}
+
+message GetPaymentStatusReply{
+	string status = 1;
+}
+
+message CashOutRequestModel{
+	string productId = 1;
+	int32 quantity = 2;
+	double amount = 3;
+}
+
+message CashoutResponseModel{
+	double totalAmount = 1;
+}
+
+message SendingMessage{
+	int32 number = 1;
+}
+
+message ReplyingMessage{
+	string reply = 1;
+}
