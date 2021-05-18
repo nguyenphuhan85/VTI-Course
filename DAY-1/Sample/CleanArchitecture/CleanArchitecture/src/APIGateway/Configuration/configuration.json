@@ -115,7 +115,7 @@
       }
     },
     {
-      "DownstreamPathTemplate": "/api/producttype/aggregate-payment",
+      "DownstreamPathTemplate": "/api/producttype/aggregate-producttype",
       "DownstreamScheme": "https",
       "DownstreamHostAndPorts": [
         {
@@ -123,7 +123,7 @@
           "Port": 7001
         }
       ],
-      "UpstreamPathTemplate": "/api/producttype/aggregate-payment",
+      "UpstreamPathTemplate": "/api/producttype/aggregate-producttype",
       "UpstreamHttpMethod": [
         "GET"
       ],
@@ -132,7 +132,7 @@
         "AuthenticationProviderKey": "TestKey",
         "AllowedScopes": []
       },
-      "Key": "aggregate-payment"
+      "Key": "aggregate-producttype"
     }
   ],
   "GlobalConfiguration": {
